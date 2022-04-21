@@ -145,12 +145,13 @@ void TcpConnection::shutdownInLoop()
 }
 
 // 连接建立
+// Poller => channel::readcallback => acceptor::handleread => TcpServer::newconnection => TcpConnection::connectEstablished
 void TcpConnection::connectEstablished()
 {
     setState(kConnected);
     channel_->tie(shared_from_this());
     channel_->enableReading();  // 向poller注册channel的epollin事件
-    connectionCallback_(shared_from_this()); // 新连接建立，执行回调
+    connectionCallback_(shared_from_this()); // 新连接建立，执行回调，可以理解成shared_ptr<TcpConnection>
 }
 
 // 连接销毁

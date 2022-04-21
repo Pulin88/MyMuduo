@@ -126,7 +126,8 @@ void EventLoop::queueLoop(Functor cb)
         wakeup();
 }
 
-void EventLoop::handleRead() //wake up
+// 唤醒loop时的接收函数
+void EventLoop::handleRead() 
 {
     uint64_t one;
     ssize_t n = ::read(wakeupFd_, &one, sizeof one);

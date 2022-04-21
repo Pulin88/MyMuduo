@@ -108,7 +108,7 @@ void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn)
 {
     LOG_INFO("TcpServer::removeConnectionInLoop [%s] - connection %s\n",
         name_.c_str(), conn->name().c_str());
-    connections_.erase(conn->name());
+    connections_.erase(conn->name()); // map_erase以后不会立即释放内存，而是有自己的回收机制，在合适时间进行回收
     EventLoop *ioLoop = conn->getLoop();
     ioLoop->queueLoop(std::bind(&TcpConnection::connectDestroyed, conn));
 }

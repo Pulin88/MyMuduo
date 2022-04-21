@@ -8,6 +8,15 @@
 #include <string.h>
 #include <netinet/tcp.h>
 
+/**
+ * 假设客户端有connfd，服务端有listenfd和clientfd，
+ * 一般情况下以上三者都必须都必须设置成非阻塞，
+ * 此时只会影响到connect/accept/recv/send，不会影响到epoll_wait/poll/select,
+ * connfd非阻塞：connect(connfd,&serveraddr,sizeof(serveraddr));返回-1并且errno==EINPROGRESS -> select监听connfd写事件 -> getsocketopt检测connfd是否出错
+ * listenfd非阻塞：select监听listenfd读事件 -> clientfd=accept4(listenfd, &clientaddr, sizeof(clientaddr), SoCK_NONBLOCK|SOCK_CLOEXEC); -> while接收accept4返回-1并且errno==EAGAIN
+ * connfd与clientfd非阻塞：send当对方TCP窗口太小发不出去立即返回，recv当无数据可接收立即返回，返回-1并且errno==EAGAIN
+ * epoll_wait/poll/select无论绑定的fd是否阻塞都会等到超时才返回，除非监听的是非阻塞的eventfd..，一旦eventfd上有所需的事件就返回
+ */
 
 Socket::~Socket()
 {

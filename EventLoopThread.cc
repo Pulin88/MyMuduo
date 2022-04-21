@@ -47,7 +47,7 @@ EventLoop* EventLoopThread::startLoop()
 // loop.loop()实现one loop per thread模型，因为loop()里面是一个循环操作
 void EventLoopThread::threadFunc()
 {
-    EventLoop loop; // 创建一个EventLoop
+    EventLoop loop; // 创建一个EventLoop，由于EventLoop在创建线程时会获取线程id，所以在该处使用变量，而在前面使用指针
     
     if(callback_)
         callback_(&loop);
